@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GoalBridge Goal-Based Investment Planner for first-time earners." />
+  <title>GoalBridge | Goal-Based Investment Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container">
+      <div class="brand">
+        <h1>GoalBridge</h1>
+        <span class="badge">Planning Tool</span>
+      </div>
+      <p class="tagline">Estimate your monthly investment roadmap without product promotions or account sign-ups.</p>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+    <!-- Input Section -->
+    <section class="card" aria-labelledby="planner-form-title">
+      <h2 id="planner-form-title">1. Enter Your Goal Parameters</h2>
+      <form id="planner-form" novalidate>
+        <div class="form-group">
+          <label for="goal-name">Goal Name <span class="req">*</span></label>
+          <input type="text" id="goal-name" placeholder="e.g., Higher Education Fund" required />
+          <span class="error-text" id="goal-name-err" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="goal-amount">Goal Amount in Today's Money (₹) <span class="req">*</span></label>
+          <input type="number" id="goal-amount" min="1000" step="500" placeholder="e.g., 1200000" required />
+          <span class="error-text" id="goal-amount-err" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="time-horizon">Horizon in Years <span class="req">*</span></label>
+          <input type="number" id="time-horizon" min="1" max="40" step="1" placeholder="e.g., 8" required />
+          <span class="error-text" id="time-horizon-err" aria-live="polite"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inflation-rate">Annual Inflation (%) <span class="req">*</span></label>
+            <input type="number" id="inflation-rate" min="0" max="30" step="0.1" placeholder="e.g., 6" required />
+            <span class="error-text" id="inflation-rate-err" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="return-rate">Expected Return (%) <span class="req">*</span></label>
+            <input type="number" id="return-rate" min="0" max="40" step="0.1" placeholder="e.g., 10" required />
+            <span class="error-text" id="return-rate-err" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="current-savings">Current Savings Set Aside (₹)</label>
+          <input type="number" id="current-savings" min="0" step="500" placeholder="e.g., 150000" value="0" />
+          <span class="error-text" id="current-savings-err" aria-live="polite"></span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btn-calc">Calculate Plan</button>
+          <button type="button" class="btn btn-secondary" id="btn-reset">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Output Section -->
+    <section class="card" aria-labelledby="results-title">
+      <h2 id="results-title">2. Investment Forecast</h2>
+      
+      <div id="results-empty" class="empty-state">
+        <p>Complete the input fields and select <strong>Calculate Plan</strong> to view your inflation-adjusted funding roadmap.</p>
+      </div>
+
+      <div id="results-box" class="results-box hidden" aria-live="polite">
+        <div class="target-card">
+          <span class="target-title">Required Monthly Contribution</span>
+          <span class="target-metric" id="out-monthly-contrib">₹0</span>
+          <p class="target-note" id="out-plan-summary"></p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <span class="kpi-label">Future Goal Cost</span>
+            <span class="kpi-value" id="out-future-goal">₹0</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Future Value of Savings</span>
+            <span class="kpi-value" id="out-future-savings">₹0</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Net Funding Gap</span>
+            <span class="kpi-value" id="out-funding-gap">₹0</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-label">Total Out-of-Pocket Invested</span>
+            <span class="kpi-value" id="out-total-invested">₹0</span>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <h3>Goal Capital Breakdown</h3>
+          <div class="stacked-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Funding breakdown">
+            <div id="bar-savings" class="bar-segment seg-savings" title="Future Value of Savings"></div>
+            <div id="bar-contrib" class="bar-segment seg-contrib" title="Out-of-Pocket Investment"></div>
+            <div id="bar-growth" class="bar-segment seg-growth" title="Compounding Returns"></div>
+          </div>
+          <div class="legend">
+            <span><span class="dot dot-savings"></span> Future Savings</span>
+            <span><span class="dot dot-contrib"></span> Total Contributions</span>
+            <span><span class="dot dot-growth"></span> Expected Growth</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <h3>Assumptions, Limitations & Educational Disclaimer</h3>
+      <p>
+        <strong>Educational Simulation Only:</strong> This application is built as an educational scenario-planning tool for GoalBridge workshops. It does not recommend financial products, guarantee investment returns, or provide regulated investment advice.
+      </p>
+      <p>
+        <strong>Mathematical Conventions:</strong> Goal costs are inflated annually. Monthly contributions are calculated under an Ordinary Annuity model compounding monthly at nominal rate $r/12$. Taxes, expense ratios, and sequence-of-returns volatility are not modeled. No personal data is stored or transmitted.
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
